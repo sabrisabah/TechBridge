@@ -623,6 +623,11 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
    إعدادات الموقع — كل ما تحتاج تعديله موجود هنا
    ========================================================== */
 const CONFIG = {
+  emailjs: {
+    serviceId: "service_qh8kjwx",
+    templateId: "template_z626i25",
+    publicKey: "sFg6qhVAfggU_EESN"
+  },
   brand: {
     name: "TechBridge",                 // اسم الشركة (يظهر في الشريط والتذييل وعنوان الصفحة)
     tagline: "SOFTWARE & AI SOLUTIONS", // السطر الصغير تحت الاسم
@@ -1007,30 +1012,41 @@ form.addEventListener("submit", async e => {
     return;
   }
 
-  /* --- الخيار 2: البريد عبر FormSubmit (CONFIG.formEmail) — يُرسل في الخلفية دون مغادرة الصفحة --- */
-  if (!CONFIG.formEmail){ setStatus("form.notConfigured", "warn"); return; }
-  // FormSubmit لا يعمل من ملف محلي (file://): انشر الصفحة على رابط http/https أو شغّلها عبر خادم محلي
+  /* --- إرسال الطلب عبر EmailJS --- */
+  if (!CONFIG.formEmail || !CONFIG.emailjs.serviceId || !CONFIG.emailjs.templateId || !CONFIG.emailjs.publicKey){
+    setStatus("form.notConfigured", "warn"); return;
+  }
   if (!/^https?:$/.test(location.protocol)){ setStatus("form.needServer", "warn"); return; }
   const btn = form.querySelector('button[type="submit"]');
+  if (btn.disabled) return;
   btn.disabled = true;
+  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
+  const fields = [
+    [t("form.name"), form.elements.name.value.trim()],
+    [t("form.email"), form.elements.email.value.trim()],
+    [t("form.org"), form.elements.organization.value.trim()],
+    [t("form.service"), label],
+    [t("form.message"), form.elements.message.value.trim()]
+  ];
+  const bodyHtml = '<div dir="' + LANGS[lang] + '">' + fields.map(([title, value]) => '<p><strong>' + escapeHtml(title) + ':</strong><br>' + escapeHtml(value).replace(/\n/g, '<br>') + '</p>').join('') + '</div>';
   try{
-    const res = await fetch("https://formsubmit.co/ajax/" + CONFIG.formEmail, {
+    const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: form.elements.name.value.trim(),
-        email: form.elements.email.value.trim(),
-        organization: form.elements.organization.value.trim(),
-        service: label,
-        message: form.elements.message.value.trim(),
-        lang,
-        _subject: t("form.subject") + " — " + label,
-        _template: "table",
-        _captcha: "false"
+        service_id: CONFIG.emailjs.serviceId,
+        template_id: CONFIG.emailjs.templateId,
+        user_id: CONFIG.emailjs.publicKey,
+        template_params: {
+          to_email: CONFIG.formEmail,
+          subject: t("form.subject") + " — " + label,
+          body_html: bodyHtml,
+          name: form.elements.name.value.trim(),
+          email: form.elements.email.value.trim()
+        }
       })
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || String(data.success) !== "true") throw new Error(data.message || ("HTTP " + res.status));
+    if (!res.ok) throw new Error("HTTP " + res.status);
     setStatus("form.sentEmail", "ok");
     form.reset();
   }catch(err){
