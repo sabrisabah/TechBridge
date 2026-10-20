@@ -263,34 +263,107 @@ section{ position:relative; }
 .card-body{ min-width:0; }
 
 /* طريقة العمل — كحلي */
-#solutions{ background:linear-gradient(180deg,var(--navy-2),var(--navy)); }
-.steps{ display:grid; gap:16px; grid-template-columns:1fr; counter-reset:s; }
-@media (min-width:640px){ .steps{ grid-template-columns:repeat(2,1fr); } }
-@media (min-width:1024px){ .steps{ grid-template-columns:repeat(4,1fr); } }
-.step{
-  position:relative; padding:26px 22px; border-radius:var(--radius);
-  background:rgba(255,255,255,.04); border:1px solid rgba(217,174,102,.25);
-  transition:border-color .25s, transform .25s;
+#solutions{
+  --lane:46px; --gap-c:100px; --gap-r:34px;
+  background:radial-gradient(1000px 520px at 50% -10%, #17386a 0%, transparent 65%), linear-gradient(180deg,var(--navy-2),var(--navy));
+  overflow:hidden;
 }
-.step:hover{ border-color:var(--gold); transform:translateY(-3px); }
-.step .num{
-  display:inline-grid; place-items:center; width:46px; height:46px; border-radius:50%;
-  border:1px solid var(--gold); color:var(--gold-2); font-weight:700; font-family:var(--font-en); margin-bottom:14px;
+#solutions::before{ content:""; position:absolute; inset-block-start:56px; inset-inline-start:24px; width:96px; height:72px; opacity:.55; pointer-events:none;
+  background:radial-gradient(circle, rgba(159,196,238,.55) 1.5px, transparent 2px) 0 0/16px 16px; }
+#solutions::after{ content:""; position:absolute; width:440px; height:440px; border:1px solid rgba(217,174,102,.18); border-radius:50%;
+  inset-block-start:-310px; inset-inline-end:-190px; pointer-events:none; }
+#solutions .container{ position:relative; z-index:1; }
+#solutions .section-head{ margin-bottom:10px; }
+#solutions .section-head h2{ font-size:clamp(1.9rem,5vw,3.1rem); color:#fff; }
+.process-sub{ text-align:center; color:#9cc3f0; font-size:clamp(1.02rem,2.4vw,1.35rem); margin-bottom:clamp(28px,5vw,44px); }
+
+.pgrid{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; }
+.pstep{
+  position:relative; display:flex; align-items:center; gap:14px; padding:20px 18px;
+  border:1px solid rgba(217,174,102,.7); border-radius:14px;
+  background:linear-gradient(135deg, rgba(23,56,106,.55), rgba(8,22,48,.6));
+  box-shadow:inset 0 0 40px rgba(63,213,207,.04);
+  transition:transform .25s, box-shadow .25s, border-color .25s;
 }
-.step h3{ font-size:1.08rem; color:#fff; line-height:1.5; }
-.step p{ margin-top:8px; color:var(--on-dark-muted); font-size:.93rem; }
+.pstep:hover{ transform:translateY(-3px); border-color:var(--gold-2); box-shadow:0 0 30px rgba(217,174,102,.16), inset 0 0 40px rgba(63,213,207,.05); }
+.ptext{ flex:1; min-width:0; }
+.pnum{ display:grid; place-items:center; width:44px; height:44px; border:1.5px solid var(--gold); border-radius:50%; color:var(--gold-2); font-weight:700; font-family:var(--font-en); margin-bottom:10px; }
+.ptext h3{ font-size:clamp(1.15rem,3vw,1.4rem); color:#fff; line-height:1.4; }
+.ptext p{ margin-top:6px; color:#9cc3f0; font-size:.98rem; line-height:1.7; }
+.pchip{ display:inline-flex; align-items:center; gap:10px; margin-top:14px; padding:.38rem 1rem; border:1px solid var(--gold-d); border-radius:22px; color:var(--gold-2); font-size:.92rem; max-width:100%; background:rgba(0,0,0,.18); }
+.pchip svg{ width:19px; height:19px; flex:none; }
+.pico{ flex:none; width:clamp(78px,22vw,150px); aspect-ratio:1; border-radius:50%; display:grid; place-items:center; color:var(--gold-2);
+  background:radial-gradient(circle, rgba(255,255,255,.07), rgba(255,255,255,.01) 70%); border:1px solid rgba(217,174,102,.2); }
+.pico svg{ width:52%; height:52%; }
+.process-cta{ margin-top:clamp(30px,5vw,46px); text-align:center; }
+.process-cta .btn{ padding:1rem 3rem; font-size:1.12rem; box-shadow:0 0 38px rgba(217,174,102,.35); }
+
+/* نافذة تفاصيل خطوة العمل */
+.pchip{ font:inherit; font-size:.92rem; cursor:pointer; transition:background .2s, border-color .2s; }
+.pchip:hover{ background:rgba(217,174,102,.16); border-color:var(--gold-2); }
+.pchip .go{ width:14px; height:14px; flex:none; opacity:.85; }
+[dir="ltr"] .pchip .go{ transform:scaleX(-1); }
+#stepDialog{ width:min(640px,94vw); max-height:92vh; overflow:auto; background:linear-gradient(180deg,#0d2347,var(--navy)); color:var(--on-dark); border-color:var(--gold); --focus:#6ff0e8; }
+#stepDialog .dlg-close{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.28); color:#fff; z-index:2; }
+#stepDialog .dlg-close:hover{ background:rgba(255,255,255,.18); }
+.sd-wrap{ position:relative; padding:clamp(22px,4vw,34px); padding-block-start:clamp(22px,4vw,30px); }
+.sd-num{ position:absolute; inset-block-start:16px; inset-inline-start:18px; width:52px; height:52px; display:grid; place-items:center; border:1.5px solid var(--gold); border-radius:50%; background:rgba(0,0,0,.22); color:var(--gold-2); font:700 1.2rem var(--font-en); }
+.sd-art{ display:flex; justify-content:center; margin-top:8px; }
+.sd-art svg{ width:min(330px,86%); height:auto; color:var(--gold-2); filter:drop-shadow(0 0 10px rgba(217,174,102,.3)); }
+#sdTitle{ text-align:center; color:#fff; font-size:clamp(1.8rem,5.5vw,2.5rem); line-height:1.4; margin-top:6px; }
+.sd-sub{ text-align:center; color:#9cc3f0; font-size:1.05rem; line-height:1.8; margin:8px auto 0; max-width:30em; }
+.sd-offer{ display:flex; align-items:center; gap:14px; margin-top:26px; color:var(--gold-2); font-size:1.2rem; }
+.sd-offer::after{ content:""; flex:1; height:1px; background:var(--gold-d); }
+.sd-list{ list-style:none; margin:14px 0 0; padding:0; display:grid; gap:8px; }
+.sd-list li{ display:flex; align-items:center; gap:12px; padding:11px 14px; border:1px solid rgba(255,255,255,.13); border-radius:10px; background:rgba(255,255,255,.03); }
+.sd-list .ck{ flex:none; width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(180deg,var(--gold-2),var(--gold)); color:var(--navy); }
+.sd-list .ck svg{ width:15px; height:15px; }
+.sd-list .tx{ flex:1; min-width:0; line-height:1.6; }
+.sd-list .ic{ flex:none; width:24px; height:24px; color:var(--gold-2); opacity:.9; }
+.sd-list .ic svg{ width:100%; height:100%; }
+.sd-back{ display:flex; align-items:center; gap:8px; margin:22px auto 0; background:none; border:0; color:#9cc3f0; padding:.5rem .8rem; border-radius:8px; }
+.sd-back:hover{ color:#fff; }
+.sd-back .arr{ width:18px; height:18px; }
+@media (max-width:480px){ .sd-list li{ padding:10px 10px; gap:9px; font-size:.95rem; } .sd-num{ width:44px; height:44px; font-size:1rem; } }
+
+/* أسهم الربط بين الخطوات (للشاشات الواسعة فقط) */
+@media (min-width:900px){
+  .pgrid{ grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; column-gap:var(--gap-c); row-gap:var(--gap-r); padding-inline:var(--lane); }
+  .pstep{ padding:26px 28px; gap:18px; }
+  .pstep:nth-child(1)::before{ content:""; position:absolute; inset-inline-start:-4px; top:50%; width:8px; height:8px; margin-top:-4px; border-radius:50%; background:var(--gold); }
+  .pstep:nth-child(1)::after{ content:""; position:absolute; inset-inline-start:calc(var(--lane) * -1); top:50%; width:var(--lane); height:calc(100% + var(--gap-r));
+    border:1.5px solid var(--gold-d); border-inline-end:0; border-start-start-radius:18px; border-end-start-radius:18px; pointer-events:none; }
+  .pstep:nth-child(3)::before, .pstep:nth-child(2)::after, .pstep:nth-child(4)::after{
+    content:""; position:absolute; inset-inline-start:-9px; top:50%; width:9px; height:12px; margin-top:-6px; background:var(--gold);
+    clip-path:polygon(100% 0,0 50%,100% 100%); }
+  [dir="ltr"] .pstep:nth-child(3)::before, [dir="ltr"] .pstep:nth-child(2)::after, [dir="ltr"] .pstep:nth-child(4)::after{ clip-path:polygon(0 0,100% 50%,0 100%); }
+  .pstep:nth-child(2)::before, .pstep:nth-child(4)::before{ content:""; position:absolute; inset-inline-start:calc(var(--gap-c) * -1); top:50%; width:var(--gap-c); height:1.5px; margin-top:-1px; background:var(--gold-d); }
+}
 
 /* من نحن */
 #about{ background:radial-gradient(900px 400px at 80% 0%, #143866 0%, transparent 60%), var(--navy); }
-.about-grid{ display:grid; gap:30px; grid-template-columns:minmax(0,1fr); align-items:center; }
-.about-grid > *{ min-width:0; }
-@media (min-width:900px){ .about-grid{ grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:56px; } }
-.about-text h2{ font-size:clamp(1.5rem,3.6vw,2.2rem); margin-bottom:16px; line-height:1.4; }
-.about-text h2::after{ content:""; display:block; width:64px; height:3px; background:var(--gold); margin-top:14px; border-radius:2px; }
-.about-text p{ color:var(--on-dark); font-size:1.05rem; max-width:38em; }
+/* نافذة «من نحن» */
+#aboutDialog{ width:min(920px,94vw); max-height:90vh; overflow:auto; background:linear-gradient(180deg,var(--navy-2),var(--navy)); color:var(--on-dark); border-color:var(--gold-d); --focus:#6ff0e8; }
+#aboutDialog .about-wrap{ padding:clamp(24px,4vw,42px); }
+#aboutDialog .dlg-close{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.28); color:#fff; z-index:2; }
+#aboutDialog .dlg-close:hover{ background:rgba(255,255,255,.18); }
+#aboutDialog .section-head{ margin-bottom:24px; padding-inline:36px; }
+#aboutDialog .about-text{ margin-top:26px; }
+@media (max-width:560px){
+  .pillar{ flex-direction:column; justify-content:center; text-align:center; gap:8px; padding:14px 8px; font-size:.9rem; line-height:1.4; }
+  .pillar svg{ width:32px; height:32px; }
+  #aboutDialog .about-wrap{ padding:22px 16px; }
+  #aboutDialog .section-head{ padding-inline:40px; }
+}
+.about-text{ max-width:64em; margin-block:clamp(30px,5vw,48px) 0; margin-inline:0; }
+.about-text h3{ font-size:clamp(1.35rem,3.2vw,1.9rem); line-height:1.5; color:var(--teal); font-weight:700; }
+.about-text h3::after{ content:""; display:block; width:64px; height:3px; background:var(--gold); margin-block:14px 18px; border-radius:2px; }
+.about-text p{ color:var(--on-dark); font-size:1.05rem; line-height:1.95; }
+.about-text p + p{ margin-top:14px; }
 .pillars{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+@media (min-width:900px){ .pillars{ grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; } }
 .pillar{
-  display:flex; align-items:center; gap:10px; padding:14px; min-width:0; overflow-wrap:anywhere; border-radius:var(--radius);
+  display:flex; align-items:center; gap:10px; padding:14px; min-width:0; overflow-wrap:break-word; border-radius:var(--radius);
   background:rgba(255,255,255,.05); border:1px solid rgba(63,213,207,.25); font-weight:600; font-size:.95rem;
 }
 .pillar svg{ width:34px; height:34px; flex:none; color:var(--teal); }
@@ -322,6 +395,14 @@ input[dir="ltr"]{ text-align:start; }
 .form-foot{ display:flex; flex-direction:column; gap:12px; align-items:flex-start; }
 .form-foot .btn{ min-width:190px; }
 .hint{ font-size:.86rem; color:var(--muted); line-height:1.6; }
+form.request[hidden]{ display:none; }
+.thanks{ text-align:center; background:#fff; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,6vw,54px) clamp(20px,4vw,34px); box-shadow:0 18px 40px rgba(11,29,58,.07); }
+.thanks[hidden]{ display:none; }
+.thanks .tick{ width:72px; height:72px; margin:0 auto 18px; border-radius:50%; display:grid; place-items:center; background:#e6f6ee; color:#168a4a; }
+.thanks .tick svg{ width:38px; height:38px; }
+.thanks h3{ font-size:clamp(1.3rem,3.4vw,1.7rem); color:var(--navy); line-height:1.5; }
+.thanks p{ margin-top:8px; color:var(--muted); font-size:1.05rem; }
+.thanks .btn{ margin-top:22px; }
 .status{ padding:.8rem 1rem; border-radius:10px; font-size:.93rem; line-height:1.6; }
 .status[hidden]{ display:none; }
 .status.warn{ background:#fff6e0; border:1px solid #e3c06a; color:#5b4200; }
@@ -402,7 +483,7 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
       <a class="link" href="#home" data-i18n="nav.home">الرئيسية</a>
       <a class="link" href="#services" data-i18n="nav.services">خدماتنا</a>
       <a class="link" href="#solutions" data-i18n="nav.solutions">حلولنا</a>
-      <a class="link" href="#about" data-i18n="nav.about">من نحن</a>
+      <a class="link" href="#about" data-open="about" data-i18n="nav.about">من نحن</a>
       <a class="link" href="#contact" data-i18n="nav.contact">تواصل معنا</a>
       <a class="btn btn-gold nav-cta" href="#contact" data-i18n="cta.discuss">ناقش مشروعك معنا</a>
     </nav>
@@ -508,20 +589,15 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
 <section class="section" id="solutions" aria-labelledby="processTitle">
   <div class="container">
     <div class="section-head"><h2 id="processTitle" data-i18n="process.title">طريقة عملنا</h2></div>
-    <ol class="steps" id="steps" style="list-style:none;margin:0;padding:0"></ol>
+    <p class="process-sub" data-i18n="process.sub"></p>
+    <ol class="pgrid" id="steps"><!-- تُولَّد من JavaScript --></ol>
+    <div class="process-cta">
+      <a class="btn btn-gold" href="#contact"><span data-i18n="process.cta"></span><svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+    </div>
   </div>
 </section>
 
-<!-- ============ من نحن ============ -->
-<section class="section" id="about" aria-labelledby="aboutTitle">
-  <div class="container about-grid">
-    <div class="about-text">
-      <h2 id="aboutTitle" data-i18n="about.title">من نحن</h2>
-      <p data-i18n="about.text"></p>
-    </div>
-    <ul class="pillars" id="pillars"></ul>
-  </div>
-</section>
+
 
 <!-- ============ التواصل ============ -->
 <section class="section light" id="contact" aria-labelledby="contactTitle">
@@ -563,6 +639,14 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
         <div class="status" id="formStatus" role="status" aria-live="polite" hidden></div>
       </div>
     </form>
+
+    <!-- رسالة الشكر: تظهر بعد نجاح الإرسال وتحل محل النموذج -->
+    <div class="thanks" id="thanks" role="status" aria-live="polite" tabindex="-1" hidden>
+      <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h3 data-i18n="form.thankTitle"></h3>
+      <p data-i18n="form.thankText"></p>
+      <button class="btn btn-gold" type="button" id="againBtn" data-i18n="form.again"></button>
+    </div>
   </div>
 </section>
 </main>
@@ -589,7 +673,7 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
         <a href="#home" data-i18n="nav.home">الرئيسية</a>
         <a href="#services" data-i18n="nav.services">خدماتنا</a>
         <a href="#solutions" data-i18n="nav.solutions">حلولنا</a>
-        <a href="#about" data-i18n="nav.about">من نحن</a>
+        <a href="#about" data-open="about" data-i18n="nav.about">من نحن</a>
         <a href="#contact" data-i18n="nav.contact">تواصل معنا</a>
       </div>
     </div>
@@ -604,6 +688,39 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
   </div>
   <div class="copy"><div class="container" id="copyright"></div></div>
 </footer>
+
+<!-- ============ من نحن (نافذة منبثقة) ============ -->
+<dialog id="aboutDialog" aria-labelledby="aboutTitle">
+  <button class="dlg-close" type="button" id="aboutClose" data-i18n-aria="aria.close">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="about-wrap">
+    <div class="section-head"><h2 id="aboutTitle" data-i18n="about.title">من نحن</h2></div>
+    <ul class="pillars" id="pillars"></ul>
+    <div class="about-text">
+      <h3 data-i18n="about.headline"></h3>
+      <p data-i18n="about.p.0"></p>
+      <p data-i18n="about.p.1"></p>
+      <p data-i18n="about.p.2"></p>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============ نافذة تفاصيل خطوة العمل ============ -->
+<dialog id="stepDialog" aria-labelledby="sdTitle">
+  <button class="dlg-close" type="button" id="sdClose" data-i18n-aria="aria.close">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="sd-wrap">
+    <span class="sd-num" id="sdNum" aria-hidden="true"></span>
+    <div class="sd-art" id="sdArt" aria-hidden="true"></div>
+    <h2 id="sdTitle"></h2>
+    <p class="sd-sub" id="sdSub"></p>
+    <h3 class="sd-offer" data-i18n="process.offer"></h3>
+    <ul class="sd-list" id="sdList"></ul>
+    <button type="button" class="sd-back" id="sdBack"><svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span data-i18n="process.back"></span></button>
+  </div>
+</dialog>
 
 <!-- ============ نافذة تفاصيل الخدمة ============ -->
 <dialog id="svcDialog" aria-labelledby="dlgTitle">
@@ -623,11 +740,6 @@ dialog::backdrop{ background:rgba(5,12,28,.72); backdrop-filter:blur(3px); }
    إعدادات الموقع — كل ما تحتاج تعديله موجود هنا
    ========================================================== */
 const CONFIG = {
-  emailjs: {
-    serviceId: "service_qh8kjwx",
-    templateId: "template_z626i25",
-    publicKey: "sFg6qhVAfggU_EESN"
-  },
   brand: {
     name: "TechBridge",                 // اسم الشركة (يظهر في الشريط والتذييل وعنوان الصفحة)
     tagline: "SOFTWARE & AI SOLUTIONS", // السطر الصغير تحت الاسم
@@ -644,6 +756,11 @@ const CONFIG = {
      طلبات النموذج تصل إلى هذا البريد، ويرى الزائر رسالة «تم الإرسال» داخل الصفحة.
      أول طلب يرسل لك رسالة تفعيل: اضغط الرابط فيها مرة واحدة (افحص Spam). اتركه "" لتعطيله. */
   formEmail: "sabrisabah78@gmail.com",
+
+  /* رد تأكيد تلقائي على بريد الزائر (خدمة EmailJS المجانية). اتركها فارغة لتعطيل الرد.
+     serviceId / templateId / publicKey تجدها في لوحة EmailJS بعد إنشاء حساب مجاني.
+     في قالب EmailJS اجعل: To Email = {{to_email}} ، Subject = {{subject}} ، المحتوى = {{{body_html}}} */
+  emailjs: { serviceId: "", templateId: "", publicKey: "" },
 
   /* بيانات التواصل (اختيارية): تبقى مخفية إلى أن تُملأ ببيانات حقيقية.
      phone: "+964..."   email: "info@yourdomain.com"   whatsapp: "964..." (أرقام فقط بصيغة دولية) */
@@ -677,16 +794,24 @@ const I18N = {
       data:  { t: "البيانات والتكامل", d: "قواعد البيانات وربط الأنظمة والتقارير التفاعلية.",
                items: ["تصميم وإدارة قواعد البيانات", "PostgreSQL", "تكامل الأنظمة عبر API", "ترحيل وتنظيف البيانات", "لوحات المعلومات والتقارير باستخدام Power BI وأدوات التحليل"] }
     },
-    process: { title: "طريقة عملنا", steps: [
-      { t: "فهم الاحتياج وتحليل المتطلبات", d: "نحدد أهداف العمل والمتطلبات والأولويات بوضوح." },
-      { t: "تصميم الحل وتجربة المستخدم", d: "نرسم معمارية الحل وواجهات استخدام واضحة وسهلة." },
-      { t: "التطوير والاختبار والإطلاق", d: "نبني الحل ونختبره ونطلقه بخطوات منظمة." },
-      { t: "المتابعة والدعم والتحسين المستمر", d: "ندعم التشغيل ونطوّر الحل حسب الاحتياج." } ] },
+    process: { title: "طريقة عملنا", sub: "من فهم التحدي إلى تشغيل الحل", cta: "ناقشنا بفكرتك", offer: "ماذا نقدّم لك؟", back: "العودة إلى طريقة عملنا", steps: [
+      { t: "نفهم احتياجك", d: "نحلّل أهدافك ونحدّد متطلبات المشروع وأولوياته.", c: "متطلبات وخطة تنفيذ", s: "نبدأ بفهم طبيعة عملك والتحديات التي تواجهك، لنحدّد الحل التقني المناسب.", l: ["مناقشة فكرة المشروع وأهدافه", "مراجعة الأنظمة وطريقة العمل الحالية", "تحديد المستخدمين والصلاحيات", "تحديد احتياجات البيانات والتكامل", "الاتفاق على نطاق العمل والمدة والتكلفة"] },
+      { t: "نصمّم الحل", d: "نصمّم تجربة واضحة ونراجع النموذج معك.", c: "نموذج أولي تفاعلي", s: "نحوّل متطلباتك إلى تصميم واضح تراجعه قبل بدء البرمجة.", l: ["تصميم واجهات تناسب هوية مؤسستك", "تنظيم الشاشات ومسارات الاستخدام", "تصميم قاعدة البيانات ومعمارية النظام", "دعم الموبايل واللغات المطلوبة", "عرض نموذج أولي ومراجعته معك"] },
+      { t: "نطوّر ونُطلق", d: "نبني الحل ونختبره ونهيّئ فريقك لاستخدامه.", c: "نظام جاهز للتشغيل", s: "نطوّر النظام ونختبره ونجهّز بيئة التشغيل لانطلاقة منظّمة.", l: ["برمجة الواجهات والوظائف وقاعدة البيانات", "ربط الخدمات والأنظمة عبر API", "إعداد السيرفر والاستضافة", "اختبار الوظائف والصلاحيات والأداء والأمان", "تجهيز البيانات وتدريب المستخدمين", "إطلاق النظام وتسليم الوثائق"] },
+      { t: "نتابع ونُحسّن", d: "نراقب الأداء ونطوّر الحل مع نمو احتياجاتك.", c: "دعم وتحسين مستمر", s: "نواصل دعمك بعد الإطلاق، ونطوّر النظام مع تغيّر احتياجات العمل.", l: ["معالجة المشاكل والملاحظات الفنية", "متابعة الأداء وتوفّر الخدمة", "تحديث النظام والمكوّنات المستخدمة", "متابعة النسخ الاحتياطية واختبار الاستعادة", "تحسين الواجهات وإضافة وظائف جديدة", "دعم وفق الباقة وأوقات الاستجابة المتفق عليها"] } ] },
     about: { title: "من نحن",
-      text: "نقدّم حلولاً برمجية وهندسية متكاملة، تجمع بين تطوير الأنظمة والذكاء الاصطناعي وإدارة البنية التحتية والبيانات، لنرافق مؤسستك من الفكرة حتى التشغيل.",
+      headline: "نحوّل الأفكار إلى أنظمة ذكية تخدم أعمالكم.",
+      p: [
+        "نحن في {name} نطوّر حلولاً برمجية ومنصات رقمية تجمع بين هندسة البرمجيات، وإدارة البيانات، وتطبيقات الذكاء الاصطناعي، لمساعدة المؤسسات على تحسين أدائها وتبسيط إجراءاتها واتخاذ قرارات مبنية على معلومات موثوقة.",
+        "تشمل مجالات عملنا تطوير المواقع والتطبيقات والأنظمة المخصصة، وتصميم قواعد البيانات ولوحات المعلومات، وتكامل الأنظمة، وإعداد الخوادم وإدارتها وتأمينها. كما نقدم حلولاً متخصصة في نظم المعلومات الصحية ومنصة DHIS2، بدءاً من تصميم الاستمارات ومسارات العمل، وصولاً إلى المؤشرات والتحليلات والتقارير.",
+        "نبدأ بفهم احتياجات كل مؤسسة، ونترجمها إلى حلول عملية قابلة للتوسع، مع الاهتمام بسهولة الاستخدام، وحماية البيانات، واستمرارية التشغيل. ونرافق شركاءنا من التخطيط والتصميم إلى التنفيذ والتدريب والدعم الفني، لبناء أنظمة تحقق قيمة مستدامة."
+      ],
       pillars: ["تطوير الأنظمة", "الذكاء الاصطناعي", "البنية التحتية", "البيانات"] },
     contact: { title: "خلّينا نحول فكرتك إلى مشروع" },
-    form: { needServer: "تم التحقق من البيانات، لكن الإرسال لا يعمل عند فتح الصفحة كملف من الجهاز. انشر الموقع على رابط ويب (أو شغّله عبر خادم محلي) ثم أعد المحاولة. لم يتم إرسال أي طلب.",
+    form: { thankTitle: "شكراً لك، تم استلام طلبك", thankText: "سنتابع طلبك ونتواصل معك بأسرع وقت ممكن.", again: "إرسال طلب آخر",
+      mailSubject: "تم استلام طلبك — {name}", mailHello: "مرحباً {user}،",
+      mailBody: "شكراً لتواصلك مع {name}. تم استلام طلبك بخصوص «{service}»، وسنتابعه ونتواصل معك بأسرع وقت ممكن.", mailBye: "مع أطيب التحيات،",
+      needServer: "تم التحقق من البيانات، لكن الإرسال لا يعمل عند فتح الصفحة كملف من الجهاز. انشر الموقع على رابط ويب (أو شغّله عبر خادم محلي) ثم أعد المحاولة. لم يتم إرسال أي طلب.",
       subject: "طلب جديد من الموقع", sentEmail: "تم إرسال طلبك بنجاح. سنرد عليك بأسرع وقت ممكن.",
       name: "الاسم", email: "البريد الإلكتروني", org: "اسم المؤسسة", optional: "(اختياري)", service: "نوع الخدمة المطلوبة",
       choose: "اختر الخدمة", other: "أخرى", message: "وصف المشروع", submit: "إرسال الطلب",
@@ -720,16 +845,24 @@ const I18N = {
       data:  { t: "داتا و یەکخستن", d: "بنکەی داتا، بەستنەوەی سیستمەکان و ڕاپۆرتی کارلێککەر.",
                items: ["دیزاین و بەڕێوەبردنی بنکەی داتا", "PostgreSQL", "یەکخستنی سیستمەکان لە ڕێگەی API", "گواستنەوە و پاککردنەوەی داتا", "داشبۆرد و ڕاپۆرت بە Power BI و ئامرازەکانی شیکاری"] }
     },
-    process: { title: "شێوازی کارکردنمان", steps: [
-      { t: "تێگەیشتن لە پێداویستی و شیکردنەوەی داواکارییەکان", d: "ئامانج و داواکاری و ئەولەویەتەکانی کار بە ڕوونی دیاری دەکەین." },
-      { t: "دیزاینی چارەسەر و ئەزموونی بەکارهێنەر", d: "ئەندازیاریی چارەسەرەکە و ڕووکارێکی ڕوون و ئاسان دادەڕێژین." },
-      { t: "پەرەپێدان، تاقیکردنەوە و دەستپێکردن", d: "چارەسەرەکە دروست دەکەین، تاقی دەکەینەوە و بە هەنگاوی ڕێکخراو دەیخەینە کار." },
-      { t: "شوێنکەوتن، پاڵپشتی و باشترکردنی بەردەوام", d: "پاڵپشتیی کارپێکردن دەکەین و چارەسەرەکە بەپێی پێویست گەشە پێ دەدەین." } ] },
+    process: { title: "شێوازی کارکردنمان", sub: "لە تێگەیشتن لە ئاستەنگەوە تا بەکارخستنی چارەسەر", cta: "لەگەڵمان باسی بیرۆکەکەت بکە", offer: "چی پێشکەش دەکەین؟", back: "گەڕانەوە بۆ شێوازی کارکردنمان", steps: [
+      { t: "پێداویستییەکانت تێدەگەین", d: "ئامانجەکانت شی دەکەینەوە و داواکارییەکان و ئەولەویەتەکانی پڕۆژەکە دیاری دەکەین.", c: "داواکاری و پلانی جێبەجێکردن", s: "دەست پێدەکەین بە تێگەیشتن لە سروشتی کارەکەت و ئەو ئاستەنگانەی ڕووبەڕووت دەبنەوە، تا چارەسەری تەکنیکیی گونجاو دیاری بکەین.", l: ["گفتوگۆکردن لەسەر بیرۆکە و ئامانجەکانی پڕۆژەکە", "پێداچوونەوە بە سیستمەکان و شێوازی کاری ئێستا", "دیاریکردنی بەکارهێنەران و دەسەڵاتەکان", "دیاریکردنی پێداویستییەکانی داتا و یەکخستن", "ڕێککەوتن لەسەر چوارچێوەی کار و ماوە و تێچوون"] },
+      { t: "چارەسەرەکە دیزاین دەکەین", d: "ئەزموونێکی ڕوون دیزاین دەکەین و نموونەکە لەگەڵت پێداچوونەوەی بۆ دەکەین.", c: "نموونەی سەرەتایی کارلێککەر", s: "داواکارییەکانت دەگۆڕین بۆ دیزاینێکی ڕوون کە پێش دەستپێکردنی کۆدنووسین پێداچوونەوەی بۆ دەکەیت.", l: ["دیزاینی ڕووکار بەپێی ناسنامەی دامەزراوەکەت", "ڕێکخستنی شاشەکان و ڕێڕەوی بەکارهێنان", "دیزاینی بنکەی داتا و ئەندازیاریی سیستم", "پشتگیریی مۆبایل و زمانە پێویستەکان", "پێشاندانی نموونەی سەرەتایی و پێداچوونەوەی لەگەڵت"] },
+      { t: "گەشەی پێدەدەین و دەیخەینە کار", d: "چارەسەرەکە دروست دەکەین و تاقی دەکەینەوە و تیمەکەت بۆ بەکارهێنانی ئامادە دەکەین.", c: "سیستمی ئامادە بۆ کارپێکردن", s: "سیستمەکە گەشە پێدەدەین و تاقی دەکەینەوە و ژینگەی کارپێکردن ئامادە دەکەین بۆ دەستپێکردنێکی ڕێکخراو.", l: ["کۆدنووسینی ڕووکار و فەرمانەکان و بنکەی داتا", "بەستنەوەی خزمەتگوزارییەکان و سیستمەکان لە ڕێگەی API", "ڕێکخستنی سێرڤەر و هۆستینگ", "تاقیکردنەوەی فەرمانەکان و دەسەڵاتەکان و کارایی و ئاسایش", "ئامادەکردنی داتا و ڕاهێنانی بەکارهێنەران", "دەستپێکردنی سیستمەکە و پێدانی بەڵگەنامەکان"] },
+      { t: "شوێنکەوتن و باشترکردن", d: "کارایی چاودێری دەکەین و چارەسەرەکە لەگەڵ گەشەی پێداویستییەکانت گەشە پێدەدەین.", c: "پشتگیری و باشترکردنی بەردەوام", s: "دوای دەستپێکردن پشتگیریت دەکەین و سیستمەکە لەگەڵ گۆڕانی پێداویستییەکانی کار گەشە پێدەدەین.", l: ["چارەسەرکردنی کێشە و تێبینییە تەکنیکییەکان", "چاودێریی کارایی و بەردەستیی خزمەتگوزاری", "نوێکردنەوەی سیستم و پێکهاتە بەکارهاتووەکان", "چاودێریی پاشەکەوتەکان و تاقیکردنەوەی گەڕاندنەوە", "باشترکردنی ڕووکار و زیادکردنی فەرمانی نوێ", "پشتگیری بەپێی پاکێج و کاتی وەڵامدانەوەی ڕێککەوتوو"] } ] },
     about: { title: "دەربارەمان",
-      text: "چارەسەری نەرمەکاڵا و ئەندازیاریی یەکگرتوو پێشکەش دەکەین، کە پەرەپێدانی سیستم، ژیریی دەستکرد، بەڕێوەبردنی ژێرخان و داتا کۆدەکاتەوە، تا لە بیرۆکەوە هەتا کارپێکردن هاوڕێی دامەزراوەکەت بین.",
+      headline: "بیرۆکەکان دەگۆڕین بۆ سیستمی زیرەک کە خزمەتی کارەکانتان دەکەن.",
+      p: [
+        "ئێمە لە {name} چارەسەری نەرمەکاڵا و پلاتفۆرمی دیجیتاڵی پەرە پێدەدەین، کە ئەندازیاریی نەرمەکاڵا و بەڕێوەبردنی داتا و بەکارهێنانەکانی ژیریی دەستکرد کۆدەکەنەوە، بۆ ئەوەی یارمەتیی دامەزراوەکان بدەین کارایییان باشتر بکەن، ڕێکارەکانیان ئاسان بکەن و بڕیار لەسەر بنەمای زانیاریی متمانەپێکراو بدەن.",
+        "بوارەکانی کارمان بریتین لە پەرەپێدانی ماڵپەڕ و ئەپ و سیستمی تایبەت، دیزاینی بنکەی داتا و داشبۆردی زانیاری، یەکخستنی سیستمەکان، و ڕێکخستن و بەڕێوەبردن و پاراستنی سێرڤەرەکان. هەروەها چارەسەری تایبەتمەند پێشکەش دەکەین لە سیستمەکانی زانیاریی تەندروستی و پلاتفۆرمی DHIS2، لە دیزاینی فۆڕم و ڕێڕەوی کارەوە تا ئاماژە و شیکاری و ڕاپۆرتەکان.",
+        "دەست پێدەکەین بە تێگەیشتن لە پێداویستییەکانی هەر دامەزراوەیەک و دەیانگۆڕین بۆ چارەسەری کرداری و فراوانبوو، لەگەڵ گرنگیدان بە ئاسانیی بەکارهێنان و پاراستنی داتا و بەردەوامیی کارپێکردن. هاوبەشەکانمان لە پلاندانان و دیزاینەوە تا جێبەجێکردن و ڕاهێنان و پشتگیریی تەکنیکی هاوڕێیی دەکەین، بۆ بنیاتنانی سیستمێک کە بەهایەکی بەردەوام دروست بکات."
+      ],
       pillars: ["پەرەپێدانی سیستم", "ژیریی دەستکرد", "ژێرخان", "داتا"] },
     contact: { title: "با بیرۆکەکەت بکەینە پرۆژە" },
-    form: { needServer: "زانیارییەکان پشتڕاستکرانەوە، بەڵام ناردن کار ناکات کاتێک پەڕەکە وەک فایل لە کۆمپیوتەرەکە دەکرێتەوە. ماڵپەڕەکە لەسەر بەستەرێکی وێب بڵاو بکەرەوە (یان بە سێرڤەری ناوخۆیی بیخەرە کار) و دووبارە هەوڵ بدەرەوە. هیچ داواکارییەک نەنێردرا.",
+    form: { thankTitle: "سوپاست دەکەین، داواکارییەکەت وەرگیرا", thankText: "داواکارییەکەت شوێن دەکەوین و بە خێراترین کات پەیوەندیت پێوە دەکەین.", again: "ناردنی داواکارییەکی تر",
+      mailSubject: "داواکارییەکەت وەرگیرا — {name}", mailHello: "سڵاو {user}،",
+      mailBody: "سوپاس بۆ پەیوەندیکردنت بە {name}. داواکارییەکەت دەربارەی «{service}» وەرگیرا، شوێنی دەکەوین و بە خێراترین کات پەیوەندیت پێوە دەکەین.", mailBye: "لەگەڵ ڕێزدا،",
+      needServer: "زانیارییەکان پشتڕاستکرانەوە، بەڵام ناردن کار ناکات کاتێک پەڕەکە وەک فایل لە کۆمپیوتەرەکە دەکرێتەوە. ماڵپەڕەکە لەسەر بەستەرێکی وێب بڵاو بکەرەوە (یان بە سێرڤەری ناوخۆیی بیخەرە کار) و دووبارە هەوڵ بدەرەوە. هیچ داواکارییەک نەنێردرا.",
       subject: "داواکارییەکی نوێ لە ماڵپەڕەوە", sentEmail: "داواکارییەکەت بە سەرکەوتوویی نێردرا. بە خێراترین کات وەڵامت دەدەینەوە.",
       name: "ناو", email: "ئیمەیڵ", org: "ناوی دامەزراوە", optional: "(ئارەزووومەندانە)", service: "جۆری خزمەتگوزاریی داواکراو",
       choose: "خزمەتگوزارییەک هەڵبژێرە", other: "یەکێکی تر", message: "وەسفی پرۆژە", submit: "ناردنی داواکاری",
@@ -763,16 +896,24 @@ const I18N = {
       data:  { t: "Data & Integration", d: "Databases, system integration, and interactive reports.",
                items: ["Database design and management", "PostgreSQL", "System integration via API", "Data migration and cleaning", "Dashboards and reports with Power BI and analytics tools"] }
     },
-    process: { title: "How we work", steps: [
-      { t: "Understanding needs and analyzing requirements", d: "We define business goals, requirements, and priorities clearly." },
-      { t: "Solution design and user experience", d: "We shape the solution architecture and clear, easy-to-use interfaces." },
-      { t: "Development, testing, and launch", d: "We build, test, and launch the solution in organized steps." },
-      { t: "Follow-up, support, and continuous improvement", d: "We support operation and keep improving the solution as needed." } ] },
+    process: { title: "How we work", sub: "From understanding the challenge to running the solution", cta: "Discuss your idea with us", offer: "What we offer you", back: "Back to how we work", steps: [
+      { t: "We understand your needs", d: "We analyze your goals and define the project's requirements and priorities.", c: "Requirements & delivery plan", s: "We start by understanding the nature of your work and the challenges you face, to define the right technical solution.", l: ["Discussing the project idea and its goals", "Reviewing current systems and ways of working", "Defining users and permissions", "Identifying data and integration needs", "Agreeing on scope, timeline, and cost"] },
+      { t: "We design the solution", d: "We design a clear experience and review the prototype with you.", c: "Interactive prototype", s: "We turn your requirements into a clear design that you review before development begins.", l: ["Designing interfaces that match your organization's identity", "Organizing screens and user flows", "Designing the database and system architecture", "Supporting mobile and the required languages", "Presenting a prototype and reviewing it with you"] },
+      { t: "We build and launch", d: "We build and test the solution and prepare your team to use it.", c: "System ready to run", s: "We develop and test the system and prepare the production environment for an organized launch.", l: ["Programming the interfaces, functions, and database", "Connecting services and systems through API", "Setting up the server and hosting", "Testing functions, permissions, performance, and security", "Preparing data and training users", "Launching the system and delivering documentation"] },
+      { t: "We follow up and improve", d: "We monitor performance and evolve the solution as your needs grow.", c: "Ongoing support & improvement", s: "We keep supporting you after launch and evolve the system as your business needs change.", l: ["Handling technical issues and feedback", "Monitoring performance and service availability", "Updating the system and the components in use", "Following up on backups and testing restores", "Improving interfaces and adding new functions", "Support per the agreed plan and response times"] } ] },
     about: { title: "About us",
-      text: "We provide integrated software and engineering solutions that bring together systems development, artificial intelligence, infrastructure management, and data, accompanying your organization from idea to operation.",
+      headline: "Turning ideas into smart systems that serve your business.",
+      p: [
+        "At {name}, we develop software solutions and digital platforms that combine software engineering, data management, and artificial intelligence applications, helping organizations improve their performance, simplify their procedures, and make decisions based on reliable information.",
+        "Our work includes developing websites, applications, and custom systems; designing databases and dashboards; integrating systems; and setting up, managing, and securing servers. We also offer specialized solutions in health information systems and the DHIS2 platform, from designing forms and workflows to indicators, analytics, and reports.",
+        "We start by understanding each organization's needs and translate them into practical, scalable solutions, with attention to ease of use, data protection, and operational continuity. We accompany our partners from planning and design through implementation, training, and technical support, to build systems that deliver lasting value."
+      ],
       pillars: ["Systems development", "Artificial intelligence", "Infrastructure", "Data"] },
     contact: { title: "Let's turn your idea into a project" },
-    form: { needServer: "Your details look valid, but sending doesn't work when the page is opened as a local file. Publish the site on a web address (or run it through a local server) and try again. No request was sent.",
+    form: { thankTitle: "Thank you, your request was received", thankText: "We will follow up on your request and get in touch as soon as possible.", again: "Send another request",
+      mailSubject: "We received your request — {name}", mailHello: "Hello {user},",
+      mailBody: "Thank you for contacting {name}. We received your request about “{service}”, and we will follow up and get in touch with you as soon as possible.", mailBye: "Best regards,",
+      needServer: "Your details look valid, but sending doesn't work when the page is opened as a local file. Publish the site on a web address (or run it through a local server) and try again. No request was sent.",
       subject: "New request from the website", sentEmail: "Your request was sent successfully. We'll get back to you as soon as possible.",
       name: "Name", email: "Email", org: "Organization", optional: "(optional)", service: "Service needed",
       choose: "Choose a service", other: "Other", message: "Project description", submit: "Send request",
@@ -800,6 +941,59 @@ const ICONS = {
 const PILLAR_ICONS = {
   0: ICONS.dev, 1: ICONS.ai, 2: ICONS.srv, 3: ICONS.data
 };
+/* أيقونات قسم طريقة العمل: كبيرة (داخل الدائرة) وصغيرة (داخل الشارة) */
+const SO = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false">';
+const STEP_ICONS = [
+  SO + '<circle cx="27" cy="27" r="15"/><path d="M38.5 38.5L53 53" stroke-width="3.4"/><path d="M19 24a9 9 0 017-7" opacity=".6"/><circle cx="8" cy="20" r="1.2" fill="currentColor"/><circle cx="54" cy="46" r="1.2" fill="currentColor"/></svg>',
+  SO + '<rect x="10" y="12" width="34" height="32" rx="2.5"/><rect x="16" y="19" width="13" height="10" rx="1"/><path d="M16 36h22M34 20h5M34 25h5"/><path d="M33 53l1.5-7.5 15-15 6 6-15 15z"/><path d="M47 33l6 6"/></svg>',
+  SO + '<rect x="6" y="10" width="46" height="38" rx="3"/><path d="M6 21h46"/><circle cx="12" cy="15.5" r=".9" fill="currentColor"/><circle cx="17" cy="15.5" r=".9" fill="currentColor"/><circle cx="22" cy="15.5" r=".9" fill="currentColor"/><path d="M23 30l-6 5 6 5M35 30l6 5-6 5M32 28l-4 14"/><circle cx="48" cy="46" r="5"/><circle cx="48" cy="46" r="9" stroke-width="4.6" stroke-dasharray="4 3.9"/></svg>',
+  SO + '<path d="M13 36v-5a19 19 0 0138 0v5"/><rect x="9" y="34" width="10" height="17" rx="4.5"/><rect x="45" y="34" width="10" height="17" rx="4.5"/><path d="M50 51c0 6-6 8-13 8"/><rect x="28" y="56" width="10" height="6" rx="3"/></svg>'
+];
+const CO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">';
+const CHIP_ICONS = [
+  CO + '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+  CO + '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
+  CO + '<path d="M14 4c4 0 6 2 6 6-2 4-5 7-8 8l-4-4c1-3 4-7 6-10z"/><circle cx="14.5" cy="9.5" r="1.5"/><path d="M8 14l-3 1 1 3M10 18l-1 3 3-1M6 18c-2 1-2 3-2 3s2 0 3-2"/></svg>',
+  CO + '<path d="M5 20v-8M11 20V6M17 20v-10M3 20h18"/></svg>'
+];
+/* رسومات ونقاط نافذة تفاصيل الخطوة */
+const AO = '<svg viewBox="0 0 320 140" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="160" cy="72" r="60" fill="rgba(255,255,255,.04)" stroke="none"/>';
+const STEP_ART = [
+  AO + '<rect x="104" y="22" width="62" height="54" rx="3"/><path d="M112 34h22M112 42h14M114 70V56M122 70V50M130 70V60M138 70V54" /><rect x="172" y="14" width="52" height="30" rx="6"/><path d="M186 44v8l8-8"/><circle cx="188" cy="29" r="1.3" fill="currentColor"/><circle cx="198" cy="29" r="1.3" fill="currentColor"/><circle cx="208" cy="29" r="1.3" fill="currentColor"/><circle cx="246" cy="26" r="9"/><path d="M242 38h8M243 42h6M246 12V8M256 16l3-3M260 28h4M236 16l-3-3"/><circle cx="72" cy="64" r="9"/><path d="M52 122c0-26 8-38 20-38s20 12 20 38"/><circle cx="232" cy="72" r="9"/><path d="M212 122c0-24 6-36 20-36s20 12 20 36"/><path d="M44 122h232M146 122l6-16h32l6 16"/></svg>',
+  AO + '<rect x="108" y="20" width="108" height="94" rx="4"/><path d="M108 34h108"/><circle cx="116" cy="27" r="1.3" fill="currentColor"/><circle cx="122" cy="27" r="1.3" fill="currentColor"/><circle cx="128" cy="27" r="1.3" fill="currentColor"/><rect x="118" y="44" width="46" height="34" rx="2"/><path d="M122 72l12-14 8 8 8-10 10 16M172 48h34M172 56h34M172 64h22"/><rect x="118" y="86" width="46" height="10" rx="3"/><rect x="172" y="84" width="30" height="16" rx="2"/><path d="M206 116l3-13 26-28 10 10-28 26z"/><path d="M231 79l10 10"/><rect x="52" y="30" width="26" height="18" rx="3"/><path d="M58 37h14M58 42h9M65 48v12M65 60h16M65 60v8"/><circle cx="65" cy="82" r="7"/><circle cx="65" cy="82" r="11.5" stroke-width="3.8" stroke-dasharray="3 3.2"/></svg>',
+  AO + '<rect x="96" y="36" width="118" height="70" rx="4"/><path d="M84 112h142M143 62l-9 9 9 9M167 62l9 9-9 9M158 58l-6 26"/><circle cx="76" cy="92" r="7"/><circle cx="76" cy="92" r="12" stroke-width="4.4" stroke-dasharray="4 3.7"/><path d="M226 52a10 10 0 010-20 14 14 0 0126-2 11 11 0 014 22z"/><path d="M240 46V30M234 36l6-6 6 6"/><rect x="232" y="68" width="50" height="14" rx="3"/><rect x="232" y="86" width="50" height="14" rx="3"/><rect x="232" y="104" width="50" height="14" rx="3"/><path d="M238 75h.01M238 93h.01M238 111h.01" stroke-width="3"/></svg>',
+  AO + '<rect x="92" y="26" width="112" height="76" rx="4"/><path d="M92 90h112M148 102v12M130 114h36"/><path d="M112 84V72M126 84V64M140 84V68M154 84V56" stroke-width="3.2"/><path d="M108 66l22-14 16 8 30-22M166 38h10v10"/><circle cx="214" cy="96" r="7"/><circle cx="214" cy="96" r="12" stroke-width="4.4" stroke-dasharray="4 3.7"/><path d="M70 72a50 50 0 0118-40M82 28l6 4-3 7M250 72a50 50 0 01-18 40M238 116l-6-4 3-7"/></svg>'
+];
+const IO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">';
+const I = {
+  chat: IO+'<path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" stroke-width="2.4"/></svg>',
+  doc: IO+'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+  users: IO+'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c3 .2 5 2.3 5 5.3"/></svg>',
+  db: IO+'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>',
+  gear: IO+'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>',
+  code: IO+'<path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/></svg>',
+  share: IO+'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></svg>',
+  server: IO+'<rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></svg>',
+  shield: IO+'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
+  rocket: IO+'<path d="M14 4c4 0 6 2 6 6-2 4-5 7-8 8l-4-4c1-3 4-7 6-10z"/><circle cx="14.5" cy="9.5" r="1.5"/><path d="M8 14l-3 1 1 3M10 18l-1 3 3-1M6 18c-2 1-2 3-2 3s2 0 3-2"/></svg>',
+  layout: IO+'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
+  flow: IO+'<rect x="3" y="4" width="7" height="6" rx="1"/><rect x="14" y="4" width="7" height="6" rx="1"/><rect x="8" y="14" width="8" height="6" rx="1"/><path d="M6.5 10v2h11v-2M12 12v2"/></svg>',
+  phone: IO+'<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>',
+  eye: IO+'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  wrench: IO+'<path d="M15 5a4 4 0 00-4 5l-7 7a2 2 0 003 3l7-7a4 4 0 005-4l-3 3-3-1-1-3z"/></svg>',
+  pulse: IO+'<path d="M3 12h4l2-6 4 12 2-6h6"/></svg>',
+  refresh: IO+'<path d="M20 11a8 8 0 00-14-4M4 4v4h4M4 13a8 8 0 0014 4M20 20v-4h-4"/></svg>',
+  backup: IO+'<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/></svg>',
+  plus: IO+'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>',
+  headset: IO+'<path d="M5 14v-2a7 7 0 0114 0v2"/><rect x="3" y="14" width="4" height="6" rx="2"/><rect x="17" y="14" width="4" height="6" rx="2"/><path d="M19 20c0 1.5-2 2-5 2"/></svg>'
+};
+const STEP_ITEM_ICONS = [
+  [I.chat, I.doc, I.users, I.db, I.gear],
+  [I.layout, I.flow, I.db, I.phone, I.eye],
+  [I.code, I.share, I.server, I.shield, I.users, I.rocket],
+  [I.wrench, I.pulse, I.refresh, I.backup, I.plus, I.headset]
+];
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const SERVICES = ["dev", "ai", "eng", "srv", "dhis2", "data"]; // ترتيب البطاقات
 
 /* ==========================================================
@@ -830,10 +1024,14 @@ function buildStatic(){
 
   // خطوات العمل
   $("#steps").innerHTML = [0,1,2,3].map(i => `
-    <li class="step">
-      <span class="num" aria-hidden="true">0${i+1}</span>
-      <h3 data-i18n="process.steps.${i}.t"></h3>
-      <p data-i18n="process.steps.${i}.d"></p>
+    <li class="pstep">
+      <div class="ptext">
+        <span class="pnum" aria-hidden="true">0${i+1}</span>
+        <h3 data-i18n="process.steps.${i}.t"></h3>
+        <p data-i18n="process.steps.${i}.d"></p>
+        <button type="button" class="pchip" data-step="${i}" aria-haspopup="dialog">${CHIP_ICONS[i]}<span data-i18n="process.steps.${i}.c"></span><svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+      </div>
+      <div class="pico" aria-hidden="true">${STEP_ICONS[i]}</div>
     </li>`).join("");
 
   // أعمدة من نحن
@@ -859,7 +1057,7 @@ function applyLang(l, persist = true){
   const html = document.documentElement;
   html.lang = l; html.dir = LANGS[l];
 
-  $$("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  $$("[data-i18n]").forEach(el => { el.textContent = String(t(el.dataset.i18n)).replace("{name}", CONFIG.brand.name); });
   $$("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
 
   document.title = CONFIG.brand.name + " | " + t("meta.title");
@@ -879,6 +1077,7 @@ function applyLang(l, persist = true){
 
   renderChannels();
   if ($("#svcDialog").open) fillDialog(currentSvc);
+  if ($("#stepDialog").open) fillStep(curStep);
 
   if (persist){ try{ localStorage.setItem("site-lang", l); }catch(e){} }
 }
@@ -1012,49 +1211,109 @@ form.addEventListener("submit", async e => {
     return;
   }
 
-  /* --- إرسال الطلب عبر EmailJS --- */
-  if (!CONFIG.formEmail || !CONFIG.emailjs.serviceId || !CONFIG.emailjs.templateId || !CONFIG.emailjs.publicKey){
-    setStatus("form.notConfigured", "warn"); return;
-  }
+  /* --- الخيار 2: البريد عبر FormSubmit (CONFIG.formEmail) — يُرسل في الخلفية دون مغادرة الصفحة --- */
+  if (!CONFIG.formEmail){ setStatus("form.notConfigured", "warn"); return; }
+  // FormSubmit لا يعمل من ملف محلي (file://): انشر الصفحة على رابط http/https أو شغّلها عبر خادم محلي
   if (!/^https?:$/.test(location.protocol)){ setStatus("form.needServer", "warn"); return; }
   const btn = form.querySelector('button[type="submit"]');
-  if (btn.disabled) return;
   btn.disabled = true;
-  const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[char]));
-  const fields = [
-    [t("form.name"), form.elements.name.value.trim()],
-    [t("form.email"), form.elements.email.value.trim()],
-    [t("form.org"), form.elements.organization.value.trim()],
-    [t("form.service"), label],
-    [t("form.message"), form.elements.message.value.trim()]
-  ];
-  const bodyHtml = '<div dir="' + LANGS[lang] + '">' + fields.map(([title, value]) => '<p><strong>' + escapeHtml(title) + ':</strong><br>' + escapeHtml(value).replace(/\n/g, '<br>') + '</p>').join('') + '</div>';
+  const v = {
+    name: form.elements.name.value.trim(),
+    email: form.elements.email.value.trim(),
+    organization: form.elements.organization.value.trim(),
+    message: form.elements.message.value.trim()
+  };
   try{
-    const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    // 1) إيصال الطلب إليك عبر FormSubmit (في الخلفية)
+    const res = await fetch("https://formsubmit.co/ajax/" + CONFIG.formEmail, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: CONFIG.emailjs.serviceId,
-        template_id: CONFIG.emailjs.templateId,
-        user_id: CONFIG.emailjs.publicKey,
-        template_params: {
-          to_email: CONFIG.formEmail,
-          subject: t("form.subject") + " — " + label,
-          body_html: bodyHtml,
-          name: form.elements.name.value.trim(),
-          email: form.elements.email.value.trim()
-        }
-      })
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ ...v, service: label, lang,
+        _subject: t("form.subject") + " — " + label, _template: "table", _captcha: "false" })
     });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    setStatus("form.sentEmail", "ok");
-    form.reset();
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.success === false || data.success === "false"){
+      console.error("FormSubmit response:", res.status, data);
+      throw new Error(data.message || ("HTTP " + res.status));
+    }
+    // 2) رد تأكيد للزائر (اختياري — EmailJS). فشله لا يمنع نجاح الطلب
+    sendConfirmation(v, label).catch(e => console.warn("Confirmation email failed:", e));
+    showThanks();
   }catch(err){
     setStatus("form.failed", "bad");
   }finally{
     btn.disabled = false;
   }
 });
+
+/* رد التأكيد التلقائي للزائر بلغة الصفحة (عبر EmailJS REST API) */
+const esc = x => String(x).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function sendConfirmation(v, label){
+  const c = CONFIG.emailjs || {};
+  if (!c.serviceId || !c.templateId || !c.publicKey) return;
+  const fill = (str) => t(str).replace("{name}", CONFIG.brand.name).replace("{user}", v.name).replace("{service}", label);
+  const body_html = `<p>${esc(fill("form.mailHello"))}</p><p>${esc(fill("form.mailBody"))}</p><p>${esc(t("form.mailBye"))}<br>${esc(CONFIG.brand.name)}</p>`;
+  const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      service_id: c.serviceId, template_id: c.templateId, user_id: c.publicKey,
+      template_params: { to_email: v.email, to_name: v.name, subject: fill("form.mailSubject"), body_html, brand: CONFIG.brand.name }
+    })
+  });
+  if (!res.ok) throw new Error("EmailJS HTTP " + res.status);
+}
+
+/* رسالة الشكر: تُخفي النموذج وتعرض الرسالة */
+const thanks = $("#thanks");
+function showThanks(){
+  form.reset();
+  form.hidden = true;
+  statusEl.hidden = true;
+  thanks.hidden = false;
+  thanks.scrollIntoView({ block: "center", behavior: "smooth" });
+  thanks.focus({ preventScroll: true });
+}
+$("#againBtn").addEventListener("click", () => {
+  thanks.hidden = true;
+  form.hidden = false;
+  $("#f-name").focus();
+});
+
+/* --- نافذة «من نحن» المنبثقة: تُفتح من القائمة والتذييل --- */
+const aboutDlg = $("#aboutDialog"); let aboutOpener = null;
+function openAbout(from){ aboutOpener = from; aboutDlg.showModal(); aboutDlg.scrollTop = 0; }
+document.addEventListener("click", e => {
+  const a = e.target.closest('[data-open="about"]');
+  if (!a) return;
+  e.preventDefault();
+  openAbout(a.closest("#mainNav") ? burger : a); // في الموبايل: إرجاع التركيز لزر القائمة
+});
+$("#aboutClose").addEventListener("click", () => aboutDlg.close());
+aboutDlg.addEventListener("click", e => { if (e.target === aboutDlg) aboutDlg.close(); });
+aboutDlg.addEventListener("close", () => { if (aboutOpener && aboutOpener.offsetParent !== null) aboutOpener.focus(); });
+
+/* --- نافذة تفاصيل خطوة العمل (تُفتح من الشارة داخل كل بطاقة) --- */
+const sd = $("#stepDialog"); let sdOpener = null, curStep = 0;
+function fillStep(i){
+  $("#sdNum").textContent = "0" + (i + 1);
+  $("#sdArt").innerHTML = STEP_ART[i];
+  $("#sdTitle").textContent = t(`process.steps.${i}.t`);
+  $("#sdSub").textContent = t(`process.steps.${i}.s`);
+  const items = get(I18N[lang], `process.steps.${i}.l`) || [];
+  $("#sdList").innerHTML = items.map((x, j) =>
+    `<li><span class="ck">${CHECK_SVG}</span><span class="tx">${esc(x)}</span><span class="ic">${(STEP_ITEM_ICONS[i][j] || "")}</span></li>`).join("");
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-step]");
+  if (!b) return;
+  curStep = +b.dataset.step; sdOpener = b;
+  fillStep(curStep); sd.showModal(); sd.scrollTop = 0;
+});
+$("#sdClose").addEventListener("click", () => sd.close());
+$("#sdBack").addEventListener("click", () => sd.close());
+sd.addEventListener("click", e => { if (e.target === sd) sd.close(); });
+sd.addEventListener("close", () => { if (sdOpener) sdOpener.focus(); });
 
 /* --- التشغيل --- */
 buildStatic();
@@ -1066,6 +1325,7 @@ buildStatic();
     l = n.startsWith("en") ? "en" : (n.startsWith("ckb") || n.startsWith("ku")) ? "ckb" : "ar";
   }
   applyLang(l, false);
+  if (location.hash === "#about") openAbout(null);
 })();
 </script>
 </body>
