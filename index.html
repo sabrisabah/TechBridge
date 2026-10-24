@@ -131,10 +131,12 @@ h1{font-family:var(--display);font-size:clamp(2.4rem,5.6vw,4.4rem);line-height:1
 [lang="en"] h1{line-height:1.05;letter-spacing:-.035em}
 .grad{background:linear-gradient(110deg,var(--accent) 10%,var(--accent-2) 50%,var(--gold) 90%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
 @keyframes shine{to{background-position:200% center}}
-.rotator{display:inline-block}
-.rotator span{display:inline-block;transition:opacity .45s cubic-bezier(.2,.7,.2,1),transform .45s cubic-bezier(.2,.7,.2,1)}
-.rotator span.out{opacity:0;transform:translateY(-30%)}
-.rotator span.pre{opacity:0;transform:translateY(30%);transition:none}
+.rotator{display:inline-grid;justify-items:start;vertical-align:top}
+.rotator>*{grid-area:1/1}
+.rotator .sizer{visibility:hidden}
+.rotator span.grad{display:inline-block;transition:opacity .45s cubic-bezier(.2,.7,.2,1),transform .45s cubic-bezier(.2,.7,.2,1)}
+.rotator span.grad.out{opacity:0;transform:translateY(-30%)}
+.rotator span.grad.pre{opacity:0;transform:translateY(30%);transition:none}
 .lead{font-size:clamp(1.05rem,1.6vw,1.25rem);color:var(--muted);max-width:560px;margin:0 0 34px}
 .cta-row{display:flex;gap:14px;flex-wrap:wrap}
 .trust{display:flex;gap:28px;margin-top:44px;flex-wrap:wrap;color:var(--dim);font-size:.85rem}
@@ -372,7 +374,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 32px;margin-top:120px}
       <span class="badge reveal"><b data-i18n="hero.badge">جديد</b><span class="pulse"></span><span data-i18n="hero.badgeText">نستقبل مشاريع جديدة</span></span>
       <h1 class="reveal" style="--d:.08s">
         <span data-i18n="hero.t1">نحوّل أفكارك إلى</span><br>
-        <span class="rotator" id="rotator"><span class="grad"></span></span>
+        <span class="rotator" id="rotator"></span>
       </h1>
       <p class="lead reveal" style="--d:.16s" data-i18n="hero.desc">برمجيات متكاملة، ذكاء اصطناعي، وبنية تحتية موثوقة — من الفكرة إلى التصميم، التطوير، والإطلاق.</p>
       <div class="cta-row reveal" style="--d:.24s">
@@ -764,8 +766,11 @@ function render(){
 let rotTimer, rotSwap;
 function startRotator(words){
   // One word in the DOM at a time: background-clip:text would otherwise paint every hidden word too
-  const word = $('#rotator span'); clearInterval(rotTimer); clearTimeout(rotSwap);
-  let i = 0; word.className = 'grad'; word.textContent = words[0];
+  // Invisible copies of every word reserve the tallest/widest size, so the hero never jumps
+  const r = $('#rotator'); clearInterval(rotTimer); clearTimeout(rotSwap);
+  r.innerHTML = words.map(w=>`<span class="sizer" aria-hidden="true">${w}</span>`).join('') + `<span class="grad"></span>`;
+  const word = $('.grad', r);
+  let i = 0; word.textContent = words[0];
   rotTimer = setInterval(()=>{
     word.classList.add('out');
     rotSwap = setTimeout(()=>{
